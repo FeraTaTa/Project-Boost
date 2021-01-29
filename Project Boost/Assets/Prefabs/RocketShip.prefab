@@ -162,6 +162,10 @@ MonoBehaviour:
   rotateSpeed: 150
   thrustSpeed: 40
   deathDropTime: 2
+  winDropTime: 2
+  audioMainEngine: {fileID: 8300000, guid: 9edc9ceadb6c25342b21a7615baae5fe, type: 3}
+  audioDeath: {fileID: 8300000, guid: 325a7bbac01f4fe408c67a8590bbe8d0, type: 3}
+  audioWin: {fileID: 8300000, guid: 16a6a7e229ac7f241aaf00c485af4ae2, type: 3}
 --- !u!82 &4049568327245751284
 AudioSource:
   m_ObjectHideFlags: 0
@@ -172,7 +176,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 9136f4309ee01cd49843baef9f6d66c0, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
