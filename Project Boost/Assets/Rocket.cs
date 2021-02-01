@@ -6,13 +6,15 @@ using UnityEngine.SceneManagement;
 public class Rocket : MonoBehaviour
 {
     Rigidbody body;
-    AudioSource audioThrust;
-    [SerializeField]
-    Timer scoreTimer;
+    AudioSource audioSource;
+    [SerializeField] Timer scoreTimer;
     public float rotateSpeed = 1;
     public float thrustSpeed = 1;
-    [SerializeField]
-    float deathDropTime = 2f;
+    [SerializeField] float deathDropTime = 2f;
+    [SerializeField] float winDropTime = 0.5f;
+    [SerializeField] AudioClip audioMainEngine;
+    [SerializeField] AudioClip audioDeath;
+    [SerializeField] AudioClip audioWin;
 
     enum Feras
     {
@@ -27,7 +29,7 @@ public class Rocket : MonoBehaviour
     void Start()
     {
         body = GetComponent<Rigidbody>();
-        audioThrust = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
 
     }
 
@@ -36,8 +38,8 @@ public class Rocket : MonoBehaviour
     {
         if(state == Feras.Alive)
         {
-            Rotate();
-            Thrust();
+            RespondToRotateInput();
+            RespondToThrustInput();
         }
         if(state == Feras.Transcending)
         {
@@ -45,7 +47,7 @@ public class Rocket : MonoBehaviour
         }
     }
 
-    private void Rotate()
+    private void RespondToRotateInput()
     {
         body.freezeRotation = true;
         if (Input.GetKey(KeyCode.A))
@@ -62,20 +64,25 @@ public class Rocket : MonoBehaviour
         body.freezeRotation = false;
     }
 
-    private void Thrust()
+    private void RespondToThrustInput()
     {
         if (Input.GetKey(KeyCode.Space))
         {
             //print("Space pressed");
-            body.AddRelativeForce(Vector3.up * thrustSpeed);
-            if (!audioThrust.isPlaying)
-            {
-                audioThrust.Play();
-            }
+            ApplyThrust();
         }
         else
         {
-            audioThrust.Stop();
+            audioSource.Stop();
+        }
+    }
+
+    private void ApplyThrust()
+    {
+        body.AddRelativeForce(Vector3.up * thrustSpeed);
+        if (!audioSource.isPlaying)
+        {
+            audioSource.PlayOneShot(audioMainEngine);
         }
     }
 
@@ -96,18 +103,21 @@ public class Rocket : MonoBehaviour
 
         if (collision.gameObject.tag == "Friendly" || collision.gameObject.tag == "Start")
         {
-            print("safe");
+            //print("safe");
         }
         else if (collision.gameObject.tag == "Goal")
         {
+            audioSource.Stop();
+            audioSource.PlayOneShot(audioWin);
             state = Feras.Transcending;
             scoreTimer.timerStarted = false;
             print("Winner!");
-            Invoke("LoadNextLevel", deathDropTime);
+            Invoke("LoadNextLevel", winDropTime);
         }
         else
         {
-            audioThrust.Stop();
+            audioSource.Stop();
+            audioSource.PlayOneShot(audioDeath);
             state = Feras.Dying;
             print("Destroy by " + collision.gameObject.name);
             Invoke("ResetToLevel_1", deathDropTime);
